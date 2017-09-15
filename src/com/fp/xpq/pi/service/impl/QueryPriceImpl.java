@@ -54,6 +54,65 @@ public class QueryPriceImpl implements QueryPrice{
 			
 			//	解析页面,查询名为ProductInfo的JSON字符串
 			if(content != null){
+				
+				//判断是否特价商品
+				if(content.indexOf("cli_upsell-option context-upsell-information") != -1){
+					int index = content.indexOf("cli_upsell-option context-upsell-information");
+					String temp = content.substring(index, index+300);
+					temp = temp.split("<span>")[1];
+					temp = temp.split("<sup>")[0];
+					
+					//	解决unicode编码表示货币单位带来的解析错误
+					String[] array = temp.split(";");
+					temp = array.length == 1 ? array[0] : array[1];
+					
+					//	第一个数字的下标
+					Integer beginIndex = null;
+					for (int j = 0; j < temp.length(); j++) {
+						if(temp.charAt(j)>=48 && temp.charAt(j)<=57){
+							beginIndex = j;
+							break;
+						}
+					}
+					//	最后一个数字的下标
+					Integer endIndex = null;
+					for (int j = 0; j < temp.length(); j++) {
+						if(temp.charAt(j)>=48 && temp.charAt(j)<=57){
+							endIndex = j;
+						}
+					}
+					
+					temp = temp.substring(beginIndex, endIndex + 1);
+					
+					//	小数点的下标
+					Integer pointIndex = null;
+					for (int j = 0; j < temp.length(); j++) {
+						if(!(temp.charAt(j)>=48 && temp.charAt(j)<=57)){
+							pointIndex = j;
+							break;
+						}
+					}
+					
+					String tempPrice = temp.substring(0, pointIndex) + "." + temp.substring(pointIndex + 1);
+					
+					//	过滤不存在价格或价格为0的游戏
+					if(tempPrice.length() == 0 || Double.parseDouble(tempPrice) == 0D) continue;
+					
+					//	匹配当地货币汇率
+					for (int j = 0; j < rateList.size(); j++) {
+						if(country.equals(rateList.get(j).get("name").toString())){
+							//	过滤没有汇率的地区
+							if("0".equals(rateList.get(j).get("rate").toString()))	continue;
+							
+							Double rate = Double.parseDouble(rateList.get(j).get("rate").toString());
+							Double price = Double.parseDouble(tempPrice);
+							list.add(price/rate);
+							System.out.println(country+"价格:"+df.format(price/rate));
+						}
+					}
+					continue;
+				}
+				
 				int beginIndex = content.indexOf("ProductInfo:") + "ProductInfo:".length();
 				int endIndex = content.indexOf("}", beginIndex) + 1;
 				content = content.substring(beginIndex, endIndex);
