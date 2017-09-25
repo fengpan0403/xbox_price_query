@@ -56,7 +56,7 @@ public class QueryPriceImpl implements QueryPrice{
 			if(content != null){
 				
 				//判断是否特价商品
-				if(content.indexOf("cli_upsell-option context-upsell-information") != -1){
+				if(content.indexOf("cli_upsell-option context-upsell-information") != -1 ){
 					int index = content.indexOf("cli_upsell-option context-upsell-information");
 					String temp = content.substring(index, index+300);
 					temp = temp.split("<span>")[1];
@@ -98,6 +98,9 @@ public class QueryPriceImpl implements QueryPrice{
 					//	过滤不存在价格或价格为0的游戏
 					if(tempPrice.length() == 0 || Double.parseDouble(tempPrice) == 0D) continue;
 					
+					//	对智利货币做特殊处理 *1000
+					if(regionCode.equals("es-CL") || regionCode.equals("es-CO")) tempPrice = String.valueOf(Double.parseDouble(tempPrice) * 1000);
+					
 					//	匹配当地货币汇率
 					for (int j = 0; j < rateList.size(); j++) {
 						if(country.equals(rateList.get(j).get("name").toString())){
@@ -108,6 +111,7 @@ public class QueryPriceImpl implements QueryPrice{
 							Double price = Double.parseDouble(tempPrice);
 							list.add(price/rate);
 							System.out.println(country+"价格:"+df.format(price/rate));
+							break;
 						}
 					}
 					continue;

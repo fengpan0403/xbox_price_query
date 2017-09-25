@@ -97,7 +97,7 @@ public class RateTask implements ServletContextListener{
 			public void run() {
 				update();
 				QueryPrice qp = new QueryPriceImpl();
-				System.out.println(qp.getLowestPrice("c4c2q9bc2w28"));
+				System.out.println(qp.getLowestPrice("c2rqll92frxh"));
 			}
         },calendar.getTime(),PERIOD_HOUR);
 	}
