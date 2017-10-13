@@ -58,7 +58,10 @@ public class QueryPriceImpl implements QueryPrice{
 				//判断是否特价商品
 				if(content.indexOf("cli_upsell-option context-upsell-information") != -1 ){
 					int index = content.indexOf("cli_upsell-option context-upsell-information");
-					String temp = content.substring(index, index+300);
+					
+					//	俄罗斯去除replace空格
+					String temp = content.substring(index, index+300).
+							replaceAll("&#160;", "");
 					temp = temp.split("<span>")[1];
 					temp = temp.split("<sup>")[0];
 					
@@ -86,20 +89,26 @@ public class QueryPriceImpl implements QueryPrice{
 					
 					//	小数点的下标
 					Integer pointIndex = null;
-					for (int j = 0; j < temp.length(); j++) {
+					for (int j = temp.length()-1 ; j >= 0; j--) {
 						if(!(temp.charAt(j)>=48 && temp.charAt(j)<=57)){
 							pointIndex = j;
 							break;
 						}
 					}
 					
-					String tempPrice = temp.substring(0, pointIndex) + "." + temp.substring(pointIndex + 1);
+					//	印度多了个“,”
+					String tempPrice = temp.substring(0, pointIndex).replaceAll(",", "") + "." + temp.substring(pointIndex + 1);
 					
 					//	过滤不存在价格或价格为0的游戏
 					if(tempPrice.length() == 0 || Double.parseDouble(tempPrice) == 0D) continue;
 					
-					//	对智利货币做特殊处理 *1000
-					if(regionCode.equals("es-CL") || regionCode.equals("es-CO")) tempPrice = String.valueOf(Double.parseDouble(tempPrice) * 1000);
+					//	对某些货币做特殊处理 *1000
+					if (regionCode.equals("ja-JP")
+							|| regionCode.equals("ko-KR")
+							|| regionCode.equals("es-CL")
+							|| regionCode.equals("es-CO"))
+						tempPrice = String.valueOf(Double
+								.parseDouble(tempPrice) * 1000);
 					
 					//	匹配当地货币汇率
 					for (int j = 0; j < rateList.size(); j++) {
@@ -158,4 +167,8 @@ public class QueryPriceImpl implements QueryPrice{
 		return lowestPrice;
 	}
 
+	public static void main(String[] args) {
+		System.out.println((int)"1.1".charAt(0));
+	}
+	
 }

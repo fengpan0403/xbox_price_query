@@ -2,6 +2,8 @@ package com.fp.xpq.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.mysql.jdbc.Connection;
+
 /**
  * 
 * @ClassName: Global
@@ -26,6 +30,7 @@ import org.xml.sax.SAXException;
 * @修改备注:
  */
 public class Global {
+	public static Connection conn = null;
 	
 	//	区域
 	public static List<Map<String, String>> regionList = new ArrayList<>();
@@ -65,8 +70,27 @@ public class Global {
 			
 			map = new HashMap<>();
 			map.put("name", element.getFirstChild().getNodeValue());
+			map.put("code", element.getAttribute("code"));
 			map.put("rate", "0");
 			rateList.add(map);
 		}
+	}
+	
+	public static Connection getConn() {
+		if(conn == null){
+		    String driver = "com.mysql.jdbc.Driver";
+		    String url = "jdbc:mysql://localhost:3306/ali";
+		    String username = "root";
+		    String password = "admin";
+		    try {
+		        Class.forName(driver);
+		        conn = (Connection) DriverManager.getConnection(url, username, password);
+		    } catch (ClassNotFoundException e) {
+		        e.printStackTrace();
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		}
+		return conn;
 	}
 }
