@@ -155,6 +155,7 @@ public class QueryPriceImpl implements QueryPrice{
 						Double price = Double.parseDouble(lstPrice);
 						list.add(price/rate);
 						System.out.println(country+"价格:"+df.format(price/rate));
+						regionList.get(i).put("price", df.format(price/rate));
 					}
 				}
 			}
@@ -163,12 +164,16 @@ public class QueryPriceImpl implements QueryPrice{
 		//	进行排序
 		Collections.sort(list);
         String lowestPrice = df.format(list.get(0));
+        String lowestCountry = "";
 		
-		return lowestPrice;
+        for (int j = 0; j < regionList.size(); j++) {
+			if(lowestPrice.equals(regionList.get(j).get("price"))){
+				lowestCountry = regionList.get(j).get("name");
+				break;
+			}
+		}
+        
+		return lowestCountry+":"+lowestPrice;
 	}
 
-	public static void main(String[] args) {
-		System.out.println((int)"1.1".charAt(0));
-	}
-	
 }
