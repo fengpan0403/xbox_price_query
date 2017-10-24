@@ -172,7 +172,7 @@ public class QueryPriceImpl implements QueryPrice{
 				break;
 			}
 		}
-        
+        System.out.println(lowestCountry+":"+lowestPrice);
 		return lowestCountry+":"+lowestPrice;
 	}
 
