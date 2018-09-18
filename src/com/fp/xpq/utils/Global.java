@@ -75,7 +75,8 @@ public class Global {
 			rateList.add(map);
 		}
 	}
-	
+
+	//	数据库好像丢了。。。。。。。
 	public static Connection getConn() {
 		if(conn == null){
 		    String driver = "com.mysql.jdbc.Driver";
